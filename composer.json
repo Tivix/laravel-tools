@@ -1,0 +1,42 @@
+{
+  "name": "kellton/laravel-tools",
+  "description": "This package provides a set of tools to help you develop Laravel applications.",
+  "keywords": [],
+  "homepage": "https://github.com/tivix/laravel-tools",
+  "license": "MIT",
+  "type": "library",
+  "require": {
+    "php": "^8.1",
+    "illuminate/support": "^9.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^6.0",
+    "phpunit/phpunit": "^9.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kellton\\Tools\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Kellton\\Tools\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Kellton\\Tools\\ToolsServiceProvider"
+      ],
+      "aliases": {
+      }
+    }
+  }
+}
