@@ -2,6 +2,7 @@
 
 namespace Kellton\Tools;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -19,6 +20,18 @@ class ToolsServiceProvider extends ServiceProvider
                 __DIR__ . '/../config/config.php' => config_path('tools.php'),
             ], 'config');
         }
+
+        // Register macro for casting
+        Collection::macro('recursive', function () {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return $this->map(function ($value) {
+                if (is_array($value) || $value instanceof Collection) {
+                    return collect($value)->recursive();
+                }
+
+                return $value;
+            });
+        });
     }
 
     /**
