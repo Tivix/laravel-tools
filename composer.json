@@ -6,12 +6,12 @@
   "license": "MIT",
   "type": "library",
   "require": {
-    "php": "^8.1",
-    "illuminate/support": "^9.0"
+    "php": "^8.1"
   },
   "require-dev": {
-    "orchestra/testbench": "^6.0",
-    "phpunit/phpunit": "^9.0"
+    "laravel/sail": "^1.16",
+    "orchestra/testbench": "^7.0",
+    "phpunit/phpunit": "^9.5"
   },
   "autoload": {
     "psr-4": {

@@ -2,10 +2,10 @@
 
 namespace Kellton\Tools\Helpers;
 
-use App\Types\Base\Undefined;
 use BackedEnum;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Kellton\Tools\Undefined;
 use UnitEnum;
 
 /**

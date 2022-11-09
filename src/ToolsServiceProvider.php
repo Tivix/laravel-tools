@@ -4,6 +4,9 @@ namespace Kellton\Tools;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
+use Kellton\Tools\Feature\Data\Data;
+use Kellton\Tools\Feature\Data\Services\DefinitionService;
+use Kellton\Tools\Feature\Data\Services\PropertyService;
 
 /**
  * Class ToolsServiceProvider handles the registration of the tools package.
@@ -41,5 +44,23 @@ class ToolsServiceProvider extends ServiceProvider
     {
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'tools');
+
+        // Set definition service as singleton
+        $this->app->singleton(
+            DefinitionService::class,
+            fn () => new DefinitionService(app(PropertyService::class))
+        );
+
+        // Resolve the data class
+        $this->app->beforeResolving(Data::class, function ($class, $parameters, $app) {
+            if ($app->has($class)) {
+                return;
+            }
+
+            $app->bind(
+                $class,
+                fn ($container) => $class::create($container['request'])
+            );
+        });
     }
 }
