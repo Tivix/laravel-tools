@@ -57,6 +57,10 @@ final class DataService
             $payload = array_merge($payload->route()->parameters, $payload->all());
         }
 
+        if($payload === null) {
+            $payload = [];
+        }
+
         $payload = collect_all($payload);
         $definition = $this->definitionService->get($class);
 

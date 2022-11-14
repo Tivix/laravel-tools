@@ -13,4 +13,7 @@ return [
         'time_format' => env('KELLTON_TOOLS_TIME_FORMAT', 'H:i:s'),
         'datetime_format' => env('KELLTON_TOOLS_DATE_TIME_FORMAT', 'Y-m-d H:i:s'),
     ],
+    'pagination' => [
+        'per_page' => env('KELLTON_TOOLS_PAGINATION_PER_PAGE', 20),
+    ],
 ];
