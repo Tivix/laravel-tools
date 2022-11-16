@@ -4,9 +4,11 @@ namespace Kellton\Tools;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
-use Kellton\Tools\Feature\Data\Data;
-use Kellton\Tools\Feature\Data\Services\DefinitionService;
-use Kellton\Tools\Feature\Data\Services\PropertyService;
+use Kellton\Tools\Features\Data\Data;
+use Kellton\Tools\Features\Data\Services\DefinitionService;
+use Kellton\Tools\Features\Data\Services\PropertyService;
+use Kellton\Tools\Features\Initializers\Commands\MigrateInitialize;
+use Kellton\Tools\Features\OpenApi\Commands\OpenApiGenerate;
 
 /**
  * Class ToolsServiceProvider handles the registration of the tools package.
@@ -44,6 +46,11 @@ class ToolsServiceProvider extends ServiceProvider
     {
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'tools');
+
+        $this->commands([
+            MigrateInitialize::class,
+            OpenApiGenerate::class,
+        ]);
 
         // Set definition service as singleton
         $this->app->singleton(

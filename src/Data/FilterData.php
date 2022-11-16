@@ -3,8 +3,8 @@
 namespace Kellton\Tools\Data;
 
 use Kellton\Tools\Enums\FilterOperation;
-use Kellton\Tools\Feature\Data\Attributes\MapName;
-use Kellton\Tools\Feature\Data\Data;
+use Kellton\Tools\Features\Data\Attributes\MapName;
+use Kellton\Tools\Features\Data\Data;
 
 /**
  * Class FilterData handles filtering data.

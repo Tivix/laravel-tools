@@ -11,8 +11,8 @@ use Kellton\Tools\Data\FilterData;
 use Kellton\Tools\Data\QueryData;
 use Kellton\Tools\Enums\FilterOperation;
 use Kellton\Tools\Enums\SortDirection;
-use Kellton\Tools\Feature\Data\Exceptions\MissingConstructor;
-use Kellton\Tools\Feature\Data\Exceptions\WrongDefaultValue;
+use Kellton\Tools\Features\Data\Exceptions\MissingConstructor;
+use Kellton\Tools\Features\Data\Exceptions\WrongDefaultValue;
 use Kellton\Tools\Undefined;
 use ReflectionException;
 

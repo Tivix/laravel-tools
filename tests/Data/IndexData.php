@@ -3,9 +3,9 @@
 namespace Kellton\Tools\Tests\Data;
 
 use Illuminate\Support\Collection;
-use Kellton\Tools\Feature\Data\Attributes\DataCollection;
-use Kellton\Tools\Feature\Data\Attributes\MapName;
-use Kellton\Tools\Feature\Data\Data;
+use Kellton\Tools\Features\Data\Attributes\DataCollection;
+use Kellton\Tools\Features\Data\Attributes\MapName;
+use Kellton\Tools\Features\Data\Data;
 use Kellton\Tools\Undefined;
 
 /**
