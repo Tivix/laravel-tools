@@ -2,8 +2,8 @@
 
 namespace Kellton\Tools\Tests\Feature;
 
-use Kellton\Tools\Feature\Data\Data;
-use Kellton\Tools\Feature\Data\Exceptions\MissingConstructor;
+use Kellton\Tools\Features\Data\Data;
+use Kellton\Tools\Features\Data\Exceptions\MissingConstructor;
 use Kellton\Tools\Tests\Data\IndexData;
 use Kellton\Tools\Tests\TestCase;
 use ReflectionException;

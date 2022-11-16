@@ -4,11 +4,11 @@ namespace Kellton\Tools\Data;
 
 use Illuminate\Support\Collection;
 use Kellton\Tools\Enums\SortDirection;
-use Kellton\Tools\Feature\Data\Attributes\DataCollection;
-use Kellton\Tools\Feature\Data\Attributes\DefaultValue;
-use Kellton\Tools\Feature\Data\Attributes\MapName;
-use Kellton\Tools\Feature\Data\Attributes\Validation\Rule;
-use Kellton\Tools\Feature\Data\Data;
+use Kellton\Tools\Features\Data\Attributes\DataCollection;
+use Kellton\Tools\Features\Data\Attributes\DefaultValue;
+use Kellton\Tools\Features\Data\Attributes\MapName;
+use Kellton\Tools\Features\Data\Attributes\Validation\Rule;
+use Kellton\Tools\Features\Data\Data;
 use Kellton\Tools\Undefined;
 
 /**
