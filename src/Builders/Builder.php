@@ -5,23 +5,23 @@ namespace Kellton\Tools\Builders;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
-use Illuminate\Validation\ValidationException;
 use Kellton\Tools\Data\FilterData;
-use Kellton\Tools\Data\QueryData;
 use Kellton\Tools\Enums\FilterOperation;
-use Kellton\Tools\Enums\SortDirection;
-use Kellton\Tools\Features\Data\Exceptions\MissingConstructor;
-use Kellton\Tools\Features\Data\Exceptions\WrongDefaultValue;
+use Kellton\Tools\Enums\OrderDirection;
+use Kellton\Tools\Models\Model;
 use Kellton\Tools\Undefined;
-use ReflectionException;
 
 /**
  * Class Builder handles base class for eloquent builders.
  *
  * @method self whereId(int $value)
+ * @method Model|EloquentCollection |array|static|null find($id, $columns = ['*'])
+ * @method Model|object|static|null first($columns = ['*'])
+ * @method Model|self create(array $attributes = [])
  */
-abstract class Builder extends EloquentBuilder
+class Builder extends EloquentBuilder
 {
     /**
      * Scope a query with whereIn by a primary key.
@@ -114,17 +114,17 @@ abstract class Builder extends EloquentBuilder
     /**
      * Scope a query to add filters based on the given query data.
      *
-     * @param QueryData|Undefined $data
+     * @param Collection|Undefined $filters
      *
      * @return $this
      */
-    public function filter(QueryData|Undefined $data): static
+    public function filters(Collection|Undefined $filters): static
     {
-        if ($data instanceof Undefined) {
+        if ($filters instanceof Undefined) {
             return $this;
         }
 
-        $data->filters->each(function (FilterData $value) {
+        $filters->each(function (FilterData $value) {
             $operation = match ($value->operation) {
                 FilterOperation::EQUAL => '=',
             };
@@ -132,10 +132,23 @@ abstract class Builder extends EloquentBuilder
             $this->where($value->name, $operation, $value->value);
         });
 
-        if ($data->sortBy) {
-            $direction = $data->sortDirection instanceof Undefined ? SortDirection::ASC : $data->sortDirection;
+        return $this;
+    }
 
-            $this->orderBy($data->sortBy, $direction->value);
+    /**
+     * Scope a query to add sorting based on the given query data.
+     *
+     * @param string|Undefined $orderBy
+     * @param OrderDirection|Undefined $orderDirection
+     *
+     * @return $this
+     */
+    public function order(string|Undefined $orderBy, OrderDirection|Undefined $orderDirection): static
+    {
+        if (!($orderBy instanceof Undefined)) {
+            $direction = $orderDirection instanceof Undefined ? OrderDirection::ASC : $orderDirection;
+
+            $this->orderBy($orderBy, $direction->value);
         }
 
         return $this;
@@ -144,20 +157,19 @@ abstract class Builder extends EloquentBuilder
     /**
      * Paginate the given query.
      *
-     * @param QueryData|Undefined $data
+     * @param int|Undefined $page
+     * @param int|Undefined $perPage
      *
      * @return LengthAwarePaginator
      */
-    public function paginateByData(QueryData|Undefined $data): LengthAwarePaginator
+    public function pagination(int|Undefined $page, int|Undefined $perPage): LengthAwarePaginator
     {
-        $defaultPerPage = config('tools.pagination.per_page');
-
-        if ($data instanceof Undefined) {
+        if ($page instanceof Undefined) {
             $page = 1;
-            $perPage = $defaultPerPage;
-        } else {
-            $perPage = !($data->perPage instanceof Undefined) ? $data->perPage : $defaultPerPage;
-            $page = !($data->page instanceof Undefined) ? $data->page : 1;
+        }
+
+        if ($perPage instanceof Undefined) {
+            $perPage = (int) config('tools.pagination.per_page');
         }
 
         return $this->paginate(perPage: $perPage, page: $page);

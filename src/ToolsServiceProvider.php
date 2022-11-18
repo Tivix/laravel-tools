@@ -9,6 +9,7 @@ use Kellton\Tools\Features\Data\Services\DefinitionService;
 use Kellton\Tools\Features\Data\Services\PropertyService;
 use Kellton\Tools\Features\Initializers\Commands\MigrateInitialize;
 use Kellton\Tools\Features\OpenApi\Commands\OpenApiGenerate;
+use Kellton\Tools\Features\ReadModel\Commands\ReadModelsRebuild;
 
 /**
  * Class ToolsServiceProvider handles the registration of the tools package.
@@ -50,6 +51,7 @@ class ToolsServiceProvider extends ServiceProvider
         $this->commands([
             MigrateInitialize::class,
             OpenApiGenerate::class,
+            ReadModelsRebuild::class,
         ]);
 
         // Set definition service as singleton
