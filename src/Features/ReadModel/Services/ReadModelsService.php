@@ -1,35 +1,35 @@
 <?php
 
-namespace Kellton\Tools\Features\Initializers\Services;
+namespace Kellton\Tools\Features\ReadModel\Services;
 
-use File;
 use Illuminate\Container\Container;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\File;
 use Kellton\Tools\Features\Action\Data\ActionResult;
 use Kellton\Tools\Features\Action\Data\Result;
 use Kellton\Tools\Features\Action\Services\ActionService;
-use Kellton\Tools\Features\Initializers\Initializer;
 use ReflectionClass;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * Class InitializeService handles the initialization of the data.
+ * Class ReadModelsService handles the read models logic.
  */
-class InitializeService extends ActionService
+final class ReadModelsService extends ActionService
 {
     /**
-     * Returns the initializers.
+     * Get the cached model services for all defined cached models inside the given path.
      *
      * @return ActionResult
      */
-    public function get(): ActionResult
+    public function getReadModels(): ActionResult
     {
         return $this->action(function () {
             /** @var Application $app */
             $app = Container::getInstance();
             $namespace = $app->getNamespace();
 
-            $initializers = collect(File::allFiles(app_path()))
-                ->map(function ($file) use ($namespace) {
+            $services = collect(File::allFiles(app_path()))
+                ->map(function (SplFileInfo $file) use ($namespace) {
                     $path = $file->getRelativePathName();
 
                     $class = sprintf(
@@ -44,22 +44,18 @@ class InitializeService extends ActionService
 
                     $reflectionClass = new ReflectionClass($class);
                     if ($reflectionClass->isAbstract()
-                        || !$reflectionClass->isSubclassOf(Initializer::class)
+                        || !$reflectionClass->isSubclassOf(ReadModelService::class)
                     ) {
                         return null;
                     }
 
-                    return collect([
-                        'order' => $reflectionClass->getConstant('ORDER'),
-                        'initializer' => $reflectionClass->newInstance(),
-                    ]);
+                    return $reflectionClass->newInstance();
                 })
                 ->filter()
-                ->sortBy('order')
-                ->map(fn ($item) => $item->get('initializer'))
                 ->values();
 
-            return new Result($initializers);
+            return new Result($services);
         });
     }
+
 }

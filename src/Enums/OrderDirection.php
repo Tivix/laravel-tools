@@ -3,9 +3,9 @@
 namespace Kellton\Tools\Enums;
 
 /**
- * Class SortDirection handles sort direction.
+ * Class OrderDirection handles the order direction.
  */
-enum SortDirection: string
+enum OrderDirection: string
 {
     case ASC = 'asc';
     case DESC = 'desc';
