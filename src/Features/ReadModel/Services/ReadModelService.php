@@ -58,6 +58,22 @@ abstract class ReadModelService extends ModelService
     }
 
     /**
+     * Returns single read model record based on given id.
+     *
+     * @param int $id
+     *
+     * @return Result
+     */
+    public function getOne(int $id): Result
+    {
+        return $this->action(function () use ($id) {
+            $object = $this->readModelQuery()->find($id);
+
+            return new Result($object);
+        });
+    }
+
+    /**
      * Create or update read model for single object.
      *
      * @param Model $object
