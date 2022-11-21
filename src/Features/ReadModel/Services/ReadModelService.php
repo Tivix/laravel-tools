@@ -106,7 +106,9 @@ abstract class ReadModelService extends ModelService
     public function count(): ActionResult
     {
         return $this->action(function () {
-            return $this->query()->count();
+            $count = $this->query()->count();
+
+            return new Result($count);
         });
     }
 
