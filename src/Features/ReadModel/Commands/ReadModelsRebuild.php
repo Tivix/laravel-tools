@@ -58,6 +58,7 @@ class ReadModelsRebuild extends Command
             return;
         }
 
+        $this->newLine();
         $this->info('Read model rebuild finished.');
     }
 
