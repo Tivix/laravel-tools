@@ -62,13 +62,13 @@ class MigrateInitialize extends Command
 
                     $actions->map(function (callable $action) use ($actionProgressBar) {
                         $action();
-                        $actionProgressBar->advance();
+                        $actionProgressBar?->advance();
                     });
 
                     $actionProgressBar?->setMessage('Finished executing initializers:');
                     $actionProgressBar?->finish();
                     $actionProgressBar?->clear();
-                    $globalProgressBar->advance();
+                    $globalProgressBar?->advance();
                 });
             });
 
