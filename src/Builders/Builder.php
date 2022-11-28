@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Kellton\Tools\Data\FilterData;
-use Kellton\Tools\Enums\FilterOperation;
+use Kellton\Tools\Enums\FilterOperator;
 use Kellton\Tools\Enums\OrderDirection;
 use Kellton\Tools\Models\Model;
 use Kellton\Tools\Undefined;
@@ -124,12 +124,18 @@ class Builder extends EloquentBuilder
             return $this;
         }
 
-        $filters->each(function (FilterData $value) {
-            $operation = match ($value->operation) {
-                FilterOperation::EQUAL => '=',
+        $filters->each(function (FilterData $filter) {
+            $operation = match ($filter->operation) {
+                FilterOperator::EQUAL => '=',
+                FilterOperator::LIKE => 'LIKE',
             };
 
-            $this->where($value->name, $operation, $value->value);
+            $value = $filter->value;
+            if ($filter->operation === FilterOperator::LIKE) {
+                $value = "%{$value}%";
+            }
+
+            $this->where($filter->name, $operation, $value);
         });
 
         return $this;
