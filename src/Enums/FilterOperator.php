@@ -9,4 +9,5 @@ enum FilterOperator: string
 {
     case EQUAL = 'eq';
     case LIKE = 'like';
+    case IN = 'in';
 }
