@@ -27,5 +27,3 @@ class FilterData extends Data
     ) {
     }
 }
-
-

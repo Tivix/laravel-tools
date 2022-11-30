@@ -3,6 +3,7 @@
 namespace Kellton\Tools\Builders;
 
 use Carbon\Carbon;
+use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -128,6 +129,7 @@ class Builder extends EloquentBuilder
             $operation = match ($filter->operation) {
                 FilterOperator::EQUAL => '=',
                 FilterOperator::LIKE => 'LIKE',
+                FilterOperator::IN => 'IN',
             };
 
             $value = $filter->value;
@@ -135,7 +137,18 @@ class Builder extends EloquentBuilder
                 $value = "%{$value}%";
             }
 
-            $this->where($filter->name, $operation, $value);
+            if ($filter->operation === FilterOperator::IN) {
+                // Move below line outside if condition if needed
+                $type = DB::getSchemaBuilder()->getColumnType($this->model->getTable(), $filter->name);
+                $value = collect(explode(',', $value));
+                if ($type === 'json') {
+                    $this->whereJsonContains($filter->name, $value);
+                } else {
+                    $this->whereIn($filter->name, $value);
+                }
+            } else {
+                $this->where($filter->name, $operation, $value);
+            }
         });
 
         return $this;
