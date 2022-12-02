@@ -4,7 +4,7 @@ namespace Kellton\Tools\Features\Data\Attributes\Validation;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_PROPERTY)]
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class Rule extends ValidationAttribute
 {
     /**
