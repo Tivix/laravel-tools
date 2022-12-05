@@ -9,7 +9,7 @@ use Kellton\Tools\Features\Action\Data\ActionResult;
 use Kellton\Tools\Features\Action\Data\Result;
 use Kellton\Tools\Features\Action\Services\ModelService;
 use Kellton\Tools\Features\ReadModel\Models\ReadModel;
-use Kellton\Tools\Models\Model;
+use Kellton\Tools\Models\ModelInterface;
 use Kellton\Tools\Undefined;
 use RuntimeException;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -76,11 +76,11 @@ abstract class ReadModelService extends ModelService
     /**
      * Create or update read model for single object.
      *
-     * @param Model $object
+     * @param ModelInterface $object
      *
      * @return ActionResult
      */
-    public function createOrUpdate(Model $object): ActionResult
+    public function createOrUpdate(ModelInterface $object): ActionResult
     {
         return $this->action(function () use ($object) {
             $data = $this->generateData($object);
@@ -140,11 +140,11 @@ abstract class ReadModelService extends ModelService
     /**
      * Returns collection of models attributes.
      *
-     * @param Model $object
+     * @param ModelInterface $object
      *
      * @return Collection
      */
-    abstract protected function generateData(Model $object): Collection;
+    abstract protected function generateData(ModelInterface $object): Collection;
 
     /**
      * Returns query builder.
