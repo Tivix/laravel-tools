@@ -4,6 +4,7 @@ namespace Kellton\Tools\Features\Data\Services;
 
 use BackedEnum;
 use Carbon\Carbon;
+use Kellton\Tools\Features\Data\Attributes\Validation\Rule;
 use Kellton\Tools\Features\Data\Attributes\Validation\ValidationAttribute;
 use Kellton\Tools\Features\Data\Definition;
 use Kellton\Tools\Features\Data\Exceptions\MissingConstructor;
@@ -39,7 +40,9 @@ final class RuleService
      */
     public function get(Definition $definition): Collection
     {
-        return $definition->properties->mapWithKeys(fn (Property $property) => $this->resolve($property)->all());
+        $data = $definition->properties->mapWithKeys(fn (Property $property) => $this->resolve($property)->all());
+
+        return $data;
     }
 
     /**
@@ -77,7 +80,7 @@ final class RuleService
             return $this->getNestedRules($property, $propertyName);
         }
 
-        return collect([$propertyName => $this->getRulesForProperty($property)]);
+        return collect([$propertyName => $this->getDataForProperty($property)]);
     }
 
     /**
@@ -87,9 +90,14 @@ final class RuleService
      *
      * @return Collection
      */
-    protected function getRulesForProperty(Property $property): Collection
+    protected function getDataForProperty(Property $property): Collection
     {
-        $rules = collect();
+        $data = collect([
+            'rules' => collect(),
+            'messages' => collect(),
+        ]);
+
+        $rules = $data->get('rules');
 
         if ($property->isNullable) {
             $rules->add('nullable');
@@ -108,9 +116,9 @@ final class RuleService
         }
 
         $this->resolveTypes($property, $rules);
-        $this->resolveAttributeRules($property, $rules);
+        $this->resolveAttributeRules($property, $data);
 
-        return $rules;
+        return $data;
     }
 
     /**
@@ -132,7 +140,7 @@ final class RuleService
             default => throw new TypeError()
         };
 
-        $parentRules = $this->getRulesForProperty($property);
+        $parentRules = $this->getDataForProperty($property);
 
         $definition = $this->definitionService->get($property->dataClass);
         $rules = $this->get($definition);
@@ -179,17 +187,20 @@ final class RuleService
      * Resolve rules for the attributes.
      *
      * @param Property $property
-     * @param Collection $rules
+     * @param Collection $data
      *
      * @return void
      */
-    private function resolveAttributeRules(Property $property, Collection $rules): void
+    private function resolveAttributeRules(Property $property, Collection $data): void
     {
         $property
             ->attributes
             ->filter(fn (object $attribute) => is_subclass_of($attribute, ValidationAttribute::class))
-            ->each(function (ValidationAttribute $rule) use ($rules) {
-                $rules->add($rule->rule);
+            ->each(function (ValidationAttribute $rule) use ($data) {
+                $data->get('rules')->add($rule->rule);
+                if ($rule instanceof Rule && $rule->message !== null) {
+                    $data->get('messages')->put($rule->rule, $rule->message);
+                }
             });
     }
 }

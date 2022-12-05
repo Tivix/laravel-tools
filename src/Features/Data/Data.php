@@ -48,6 +48,6 @@ readonly abstract class Data
         /** @var RuleService $service */
         $service = app(RuleService::class);
 
-        return $service->getByClass(static::class)->toArray();
+        return $service->getByClass(static::class)->transform(fn ($value) => $value->get('rules'))->toArray();
     }
 }

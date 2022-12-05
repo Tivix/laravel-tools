@@ -57,7 +57,7 @@ final class DataService
             $payload = array_merge($payload->route()->parameters, $payload->all());
         }
 
-        if($payload === null) {
+        if ($payload === null) {
             $payload = [];
         }
 
@@ -91,9 +91,18 @@ final class DataService
      */
     private function validate(Definition $definition, Collection $payload): Collection
     {
-        $rules = $this->ruleService->get($definition);
+        $data = $this->ruleService->get($definition);
 
-        $validator = Validator::make($payload->toArray(), $rules->toArray());
+        $rules = $data->map(fn (Collection $value) => $value->get('rules'));
+        $messages = $data->map(
+            fn (Collection $value) => $value->get('messages')->isNotEmpty() ? $value->get('messages') : null
+        )->filter();
+
+        $validator = Validator::make(
+            $payload->toArray(),
+            $rules->toArray(),
+            $messages->toArray()
+        );
 
         $validator->validate();
 
