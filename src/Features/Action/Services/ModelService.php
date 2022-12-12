@@ -5,6 +5,7 @@ namespace Kellton\Tools\Features\Action\Services;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
 use Kellton\Tools\Models\Model;
+use Kellton\Tools\Models\ModelInterface;
 use Kellton\Tools\Rules\Exists;
 
 /**
@@ -12,7 +13,7 @@ use Kellton\Tools\Rules\Exists;
  *
  * @property Model $object
  *
- * @method self load(Model $object)
+ * @method self load(ModelInterface $object)
  */
 abstract class ModelService extends ActionService
 {

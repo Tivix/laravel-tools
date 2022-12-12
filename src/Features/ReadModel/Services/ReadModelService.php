@@ -69,6 +69,10 @@ abstract class ReadModelService extends ModelService
         return $this->action(function () use ($id) {
             $object = $this->readModelQuery()->find($id);
 
+            if ($object) {
+                $this->load($object);
+            }
+
             return new Result($object);
         });
     }
@@ -89,10 +93,13 @@ abstract class ReadModelService extends ModelService
                 throw new RuntimeException('Missing id in data');
             }
 
+            /** @var ModelInterface $object */
             $object = $this->readModelQuery()->updateOrCreate(
                 ['id' => $data->get('id')],
                 $data->toArray()
             );
+
+            $this->load($object);
 
             return new Result($object);
         });
@@ -135,6 +142,22 @@ abstract class ReadModelService extends ModelService
 
             return new Result();
         });
+    }
+
+    /**
+     * Delete the read model.
+     *
+     * @return Result
+     */
+    public function delete(): ActionResult
+    {
+        return $this->actionOnObject(
+            action: function () {
+                $this->object->delete();
+
+                return new Result();
+            },
+        );
     }
 
     /**
