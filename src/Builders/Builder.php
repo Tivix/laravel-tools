@@ -3,11 +3,11 @@
 namespace Kellton\Tools\Builders;
 
 use Carbon\Carbon;
-use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Kellton\Tools\Data\FilterData;
 use Kellton\Tools\Enums\FilterOperator;
 use Kellton\Tools\Enums\OrderDirection;
