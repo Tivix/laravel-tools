@@ -9,7 +9,7 @@ use RuntimeException;
 /**
  * Class ActionResult handles the result of the action.
  */
-abstract class ActionResult extends Data
+readonly abstract class ActionResult extends Data
 {
     /**
      * Returns result data if successful.

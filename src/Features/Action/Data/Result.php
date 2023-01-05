@@ -5,7 +5,7 @@ namespace Kellton\Tools\Features\Action\Data;
 /**
  * Class Result handles the success result of the action.
  */
-class Result extends ActionResult
+readonly class Result extends ActionResult
 {
     /**
      * Result constructor.
@@ -13,7 +13,7 @@ class Result extends ActionResult
      * @param mixed $data
      */
     public function __construct(
-        public readonly mixed $data = null,
+        public mixed $data = null,
     ) {
     }
 }

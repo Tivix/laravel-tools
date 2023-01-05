@@ -11,7 +11,7 @@ use Kellton\Tools\Undefined;
 /**
  * Class IndexData handles the data for any index action with filters.
  */
-class IndexData extends Data
+readonly class IndexData extends Data
 {
     /**
      * FilterData constructor.

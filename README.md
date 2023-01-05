@@ -25,7 +25,7 @@ docker run --rm -v $(pwd):/app composer install
 Then you can run the tests:
 
 ```bash
-docker run --rm -v $(pwd):/app -w /app php:8.1-cli vendor/bin/phpunit
+docker run --rm -v $(pwd):/app -w /app php:8.2-cli vendor/bin/phpunit
 ```
 
 ### Testing
