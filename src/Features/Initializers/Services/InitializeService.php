@@ -2,9 +2,9 @@
 
 namespace Kellton\Tools\Features\Initializers\Services;
 
-use File;
 use Illuminate\Container\Container;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\File;
 use Kellton\Tools\Features\Action\Data\ActionResult;
 use Kellton\Tools\Features\Action\Data\Result;
 use Kellton\Tools\Features\Action\Services\ActionService;

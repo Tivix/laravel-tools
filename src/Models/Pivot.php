@@ -2,15 +2,15 @@
 
 namespace Kellton\Tools\Models;
 
-use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Relations\Pivot as EloquentPivot;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Kellton\Tools\Builders\Builder;
 use Kellton\Tools\Models\Traits\HasTableName;
 
 /**
- * Class Model handles the base model.
+ * Class Pivot handles the base pivot model.
  */
-abstract class Model extends EloquentModel implements ModelInterface
+abstract class Pivot extends EloquentPivot implements ModelInterface
 {
     use HasTableName;
 
