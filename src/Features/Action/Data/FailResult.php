@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class FailResult handles the fail result of the action.
  */
-class FailResult extends ActionResult
+readonly class FailResult extends ActionResult
 {
     /**
      * FailResult constructor.
@@ -16,8 +16,8 @@ class FailResult extends ActionResult
      * @param string $message
      */
     public function __construct(
-        public readonly int $code,
-        public readonly string $message,
+        public int $code,
+        public string $message,
     ) {
     }
 

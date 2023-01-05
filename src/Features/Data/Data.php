@@ -12,7 +12,7 @@ use ReflectionException;
 /**
  * Class Data is the base class for all data classes.
  */
-abstract class Data
+readonly abstract class Data
 {
     /**
      * Crate data instance from a multiple sources.

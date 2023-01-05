@@ -23,12 +23,7 @@ class DataTest extends TestCase
      */
     public function testCreateShouldSucceed(): void
     {
-        $data = new class('John', 'Doe') extends Data
-        {
-            public function __construct(public string $firstName, public string $lastName)
-            {
-            }
-        };
+        $data = new TestData('John', 'Doe');
         $this->assertInstanceOf(Data::class, $data);
 
         $validationRules = $data::getValidationRules();
@@ -51,5 +46,15 @@ class DataTest extends TestCase
 
         $this->assertIsArray($validationRules);
         $this->assertNotEmpty($validationRules);
+    }
+}
+
+/**
+ * Class TestData is used for testing readonly Data class.
+ */
+readonly class TestData extends Data
+{
+    public function __construct(public string $firstName, public string $lastName)
+    {
     }
 }

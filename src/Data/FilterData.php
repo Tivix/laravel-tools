@@ -9,7 +9,7 @@ use Kellton\Tools\Features\Data\Data;
 /**
  * Class FilterData handles filtering data.
  */
-class FilterData extends Data
+readonly class FilterData extends Data
 {
     /**
      * FilterData constructor.
@@ -20,11 +20,11 @@ class FilterData extends Data
      */
     public function __construct(
         #[MapName('n')]
-        public readonly string $name,
+        public string $name,
         #[MapName('o')]
-        public readonly FilterOperator $operation,
+        public FilterOperator $operation,
         #[MapName('v')]
-        public readonly string $value,
+        public string $value,
     ) {
     }
 }
