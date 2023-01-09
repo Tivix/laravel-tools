@@ -91,22 +91,43 @@ final class DataService
      */
     private function validate(Definition $definition, Collection $payload): Collection
     {
-        $data = $this->ruleService->get($definition);
+        $definitions = $this->ruleService->get($definition);
 
-        $rules = $data->map(fn (Collection $value) => $value->get('rules'));
-        $messages = $data->map(
-            fn (Collection $value) => $value->get('messages')->isNotEmpty() ? $value->get('messages') : null
-        )->filter();
+        $rules = $definitions->map(fn (Collection $value) => $value->get('rules'));
+        $messages = $definitions->map(fn (Collection $value) => $value->get('messages'));
 
         $validator = Validator::make(
             $payload->toArray(),
             $rules->toArray(),
-            $messages->toArray()
+            $this->parseValidationErrorMessages($messages)
         );
 
         $validator->validate();
 
         return collect_all($validator->validated());
+    }
+
+    /**
+     * Parse validation error messages to array.
+     *
+     * @param Collection $validationErrorMessages
+     *
+     * @return array
+     */
+    private function parseValidationErrorMessages(Collection $validationErrorMessages): array
+    {
+        $validationMessages = [];
+
+        $validationErrorMessages->each(function (Collection $errorMessages, $fieldName) use (&$validationMessages) {
+            if ($errorMessages->isNotEmpty()) {
+                $errorMessages->each(function ($errorMessage, $ruleName) use ($fieldName, &$validationMessages) {
+                    $keyName = $fieldName . '.' . explode(':', $ruleName)[0];
+                    $validationMessages[$keyName] = $errorMessage;
+                });
+            }
+        });
+
+        return $validationMessages;
     }
 
     /**

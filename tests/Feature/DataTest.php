@@ -79,7 +79,7 @@ class DataTest extends TestCase
         try {
             $data::create(['percentage' => 4]);
         } catch (ValidationException $exception) {
-            $message = data_get($exception->errors(), 'percentage.0.regex:/^[0-9]*[0,5]$/');
+            $message = data_get($exception->errors(), 'percentage.0');
             $this->assertSame('The percentage must be a number and divisible by 5.', $message);
         }
     }
