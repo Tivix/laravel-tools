@@ -14,7 +14,6 @@ use Kellton\Tools\Tests\Data\IndexData;
 use Kellton\Tools\Tests\TestCase;
 use Kellton\Tools\Undefined;
 use ReflectionException;
-use voku\helper\ASCII;
 
 /**
  * Class DataTest handles the tests for the data class.
