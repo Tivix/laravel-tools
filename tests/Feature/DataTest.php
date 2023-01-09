@@ -2,9 +2,11 @@
 
 namespace Kellton\Tools\Tests\Feature;
 
+use Illuminate\Validation\ValidationException;
 use Kellton\Tools\Features\Data\Data;
 use Kellton\Tools\Features\Data\Exceptions\MissingConstructor;
 use Kellton\Tools\Tests\Data\IndexData;
+use Kellton\Tools\Tests\Data\TestData;
 use Kellton\Tools\Tests\TestCase;
 use ReflectionException;
 
@@ -23,7 +25,7 @@ class DataTest extends TestCase
      */
     public function testCreateShouldSucceed(): void
     {
-        $data = new TestData('John', 'Doe');
+        $data = new TestData('John', 'Doe', 'john.doe@kellton.com');
         $this->assertInstanceOf(Data::class, $data);
 
         $validationRules = $data::getValidationRules();
@@ -47,14 +49,18 @@ class DataTest extends TestCase
         $this->assertIsArray($validationRules);
         $this->assertNotEmpty($validationRules);
     }
-}
 
-/**
- * Class TestData is used for testing readonly Data class.
- */
-readonly class TestData extends Data
-{
-    public function __construct(public string $firstName, public string $lastName)
+    public function testRuleMessageShouldSucceed(): void
     {
+        try {
+            TestData::create([
+                'firstName' => 'John',
+                'lastName' => 'Doe',
+                'email' => 'john',
+            ]);
+        } catch (ValidationException $e) {
+            $message = data_get($e->errors(), 'email.0');
+            $this->assertSame('Wrong email address format!', $message);
+        }
     }
 }
