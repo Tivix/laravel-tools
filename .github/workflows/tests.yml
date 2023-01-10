@@ -4,5 +4,8 @@ on: [push]
 
 jobs:
   build:
-    -name: Install composer
-    run: docker run --rm -v $(pwd):/app composer install
+      name: 'Build'
+      runs-on: self-hosted
+      steps:
+        - name: Install composer
+          run: docker run --rm -v $(pwd):/app composer install
