@@ -7,6 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
-        uses: docker://composer:latest
-        with:
-          args: install
+        run: composer install
