@@ -5,11 +5,11 @@ on:
     branches:
       - main
   pull_request:
-#    paths:
-#      - "src/**"
-#      - ".github/workflows/tests.yml"
-#    types:
-#      - opened
+    paths:
+      - "src/**"
+      - ".github/workflows/tests.yml"
+    types:
+      - opened
     branches:
       - main
 
@@ -19,9 +19,6 @@ jobs:
     steps:
       - name: Checkout data
         uses: actions/checkout@v3
-
-      - name: List directories
-        run: ls -l
 
       - name: Install dependencies
         run: docker run --rm -v $(pwd):/app composer install
