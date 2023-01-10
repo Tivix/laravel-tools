@@ -2,6 +2,9 @@ name: 'Install dependencies and test'
 
 on:
   push:
+    paths:
+      - "src/**"
+      - ".github/workflows/build.yml"
     branches:
       - main
   pull_request:
