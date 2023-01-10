@@ -8,8 +8,8 @@ on:
 #    paths:
 #      - "src/**"
 #      - ".github/workflows/tests.yml"
-    types:
-      - opened
+#    types:
+#      - opened
     branches:
       - main
 
