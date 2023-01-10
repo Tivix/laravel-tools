@@ -24,12 +24,6 @@ jobs:
       - name: 'Checkout data'
         uses: actions/checkout@v3
 
-      - name: 'Cache composer dependencies'
-        uses: actions/cache@v3
-        with:
-          path: /tmp/composer-cache
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-
       - name: 'Install composer dependencies'
         uses: php-actions/composer@v6
 
