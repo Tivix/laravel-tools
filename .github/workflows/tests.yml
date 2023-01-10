@@ -1,6 +1,12 @@
 name: Tests
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_requests:
+    branches:
+      - main
 
 jobs:
   build:
@@ -9,5 +15,12 @@ jobs:
       - name: Checkout data
         uses: actions/checkout@v3
 
+      - name: List directories
+        run: ls -l
+
       - name: Install dependencies
         run: docker run --rm -v $(pwd):/app composer install
+
+      - name: Tests
+        run: docker run --rm -v $(pwd):/app -w /app php:8.2-cli vendor/bin/phpunit
+
