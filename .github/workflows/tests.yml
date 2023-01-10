@@ -20,12 +20,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout data
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: docker run --rm -v $(pwd):/app composer install
-
-      - name: Tests
-        run: docker run --rm -v $(pwd):/app -w /app php:8.2-cli vendor/bin/phpunit
+      - uses: actions/checkout@v3
+      - uses: php-actions/composer@v6
 
