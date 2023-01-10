@@ -5,6 +5,11 @@ on:
     branches:
       - main
   pull_requests:
+    paths:
+      - "src/**"
+      - ".github/workflows/tests.yml"
+    types:
+      - opened
     branches:
       - main
 
