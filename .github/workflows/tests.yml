@@ -4,8 +4,7 @@ on: [push]
 
 jobs:
   build:
-      name: 'Build'
-      runs-on: self-hosted
-      steps:
-        - name: Install composer
-          run: docker run --rm -v $(pwd):/app composer install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: ls -l
