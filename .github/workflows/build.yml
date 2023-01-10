@@ -12,6 +12,7 @@ on:
       - opened
       - synchronize
       - reopened
+      - draft
       - ready_for_review
     branches:
       - main
