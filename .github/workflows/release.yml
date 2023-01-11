@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - "src/**"
+      - ".github/workflows/build.yml"
 #    types:
 #      - closed
 
@@ -22,3 +25,4 @@ jobs:
         with:
           auto_increment_type: 'patch'
           tag_schema: 'semantic'
+          prerelease: true
