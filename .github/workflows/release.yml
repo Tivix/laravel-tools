@@ -1,4 +1,4 @@
-name: 'Build new release from changes'
+name: 'Build new based on the PR changes'
 
 on:
   pull_request:
