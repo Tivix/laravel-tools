@@ -1,0 +1,28 @@
+name: 'Build new release from changes'
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - ".github/workflows/build.yml"
+    types:
+      - closed
+
+jobs:
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v3
+
+      - name: 'Create release with increment'
+        uses: zendesk/action-create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          auto_increment_type: 'patch'
+          tag_schema: 'semantic'
+          prerelease: true
