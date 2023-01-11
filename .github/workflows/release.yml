@@ -10,16 +10,13 @@ on:
 jobs:
   release:
     name: Create release
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: 'Checkout code'
         uses: actions/checkout@v3
 
-      - name: 'Create release'
+      - name: Create Release
+        id: create_release
         uses: zendesk/action-create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          auto_increment_type: patch
-          draft: false
-          prerelease: true
