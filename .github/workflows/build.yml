@@ -4,13 +4,13 @@ on:
   push:
     paths:
       - "src/**"
-      - ".github/workflows/build.yml"
+      - ".github/workflows/**"
     branches:
       - main
   pull_request:
     paths:
       - "src/**"
-      - ".github/workflows/build.yml"
+      - ".github/workflows/**"
     types:
       - opened
       - synchronize
