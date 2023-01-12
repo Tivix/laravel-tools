@@ -21,11 +21,8 @@ jobs:
 
       - name: 'Create release with increment'
         uses: zendesk/action-create-release@v1
-#        if: contains(github.event.pull_request.labels.*.name, 'create minor release')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          CREATE_MINOR_RELEASE: ${{ contains(github.event.pull_request.labels.*.name, 'create minor release') }}
-#        if: ${CREATE_MINOR_RELEASE} == true
         with:
           auto_increment_type: 'patch'
           tag_schema: 'semantic'
