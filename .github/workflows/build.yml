@@ -24,7 +24,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout data'
+      - name: 'Checkout code'
         uses: actions/checkout@v3
 
       - name: 'Cache Composer dependencies'
