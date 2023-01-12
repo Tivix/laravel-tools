@@ -38,3 +38,7 @@ jobs:
 
       - name: 'Run PHPUnit tests'
         uses: php-actions/phpunit@v3
+
+      - name: 'Check label exists'
+        if: contains(github.event.pull_request.labels.*.name, 'create minor release')
+        run: echo 'Label exist'
