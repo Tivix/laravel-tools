@@ -24,7 +24,7 @@ jobs:
         uses: zendesk/action-create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CREATE_MINOR_RELEASE: ${{ contains(github.event.pull_request.labels.*.name, 'create minor release') }}
+#          CREATE_MINOR_RELEASE: ${{ contains(github.event.pull_request.labels.*.name, 'create minor release') }}
         with:
           auto_increment_type: 'patch'
           tag_schema: 'semantic'
