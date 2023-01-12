@@ -20,9 +20,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 'Create release with increment'
+        if: ${CREATE_MINOR_RELEASE} == true
         uses: zendesk/action-create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CREATE_MINOR_RELEASE: ${{ contains(github.event.pull_request.labels.*.name, 'create minor release') }}
         with:
           auto_increment_type: 'patch'
           tag_schema: 'semantic'
