@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "src/**"
-      - ".github/workflows/build.yml"
+      - ".github/workflows/**"
     types:
       - closed
 
@@ -19,11 +19,20 @@ jobs:
       - name: 'Checkout code'
         uses: actions/checkout@v3
 
+      - name: 'Preparation for the minor release'
+        run: echo "RELEASE_INCREMENT_TYPE=patch" >> $GITHUB_ENV
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'create minor release') }}
+
+      - name: 'Preparation for the major release'
+        run: echo 'RELEASE_INCREMENT_TYPE=minor' >> $GITHUB_ENV
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'create major release') }}
+
       - name: 'Create release with increment'
+        if: ${{ env.RELEASE_INCREMENT_TYPE }}
         uses: zendesk/action-create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          auto_increment_type: 'patch'
+          auto_increment_type: ${{ env.RELEASE_INCREMENT_TYPE }}
           tag_schema: 'semantic'
           prerelease: true
