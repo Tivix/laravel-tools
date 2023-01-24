@@ -35,6 +35,8 @@ jobs:
 
       - name: 'Install composer dependencies'
         uses: php-actions/composer@v6
+        with:
+          push: false
 
       - name: 'Run PHPUnit tests'
         uses: php-actions/phpunit@v3
