@@ -35,9 +35,3 @@ jobs:
 
       - name: 'Composer install'
         run: docker run --rm -v $(pwd):/app composer install
-
-      - name: Retrieve cached vendor folder
-        uses: actions/cache@v3
-        with:
-          path: /vendor
-          key: ${{ github.sha }}
