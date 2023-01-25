@@ -37,3 +37,6 @@ jobs:
       - name: 'Composer install'
         if: steps.cache-composer.outputs.cache-hit != 'true'
         run: docker run --rm -v $(pwd):/app composer install
+
+      - name: 'PHPUnit tests'
+        run: docker run --rm -v $(pwd):/app -w /app php:8.2-cli vendor/bin/phpunit
