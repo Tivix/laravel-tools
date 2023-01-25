@@ -30,11 +30,12 @@ jobs:
       - name: 'Cache Composer dependencies'
         uses: actions/cache@v3
         with:
-          path: /tmp/composer-cache
+          path: /tmp/vendor/
           key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
       - name: 'Install composer dependencies'
-        run: docker run --rm -v $(pwd):/app composer install
+        run: composer install
+#        run: docker run --rm -v $(pwd):/app composer install
 #        uses: php-actions/composer@v6
 
 #      - name: 'Run PHPUnit tests'
