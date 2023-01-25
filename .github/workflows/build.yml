@@ -27,11 +27,13 @@ jobs:
       - name: 'Checkout code'
         uses: actions/checkout@v3
 
-      - name: 'Cache vendor folder'
+      - name: 'Cache composer results'
+        id: cache-composer
         uses: actions/cache@v3
         with:
           path: ./composer.lock
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-composer
 
       - name: 'Composer install'
+        if: steps.cache-composer.outputs.cache-hit != 'true'
         run: docker run --rm -v $(pwd):/app composer install
