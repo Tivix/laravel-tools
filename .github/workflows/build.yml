@@ -34,9 +34,8 @@ jobs:
 #          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
       - name: 'Install composer dependencies'
-        uses: php-actions/composer@v6
-        with:
-          push: false
+        run: docker run --rm -v $(pwd):/app composer install
+#        uses: php-actions/composer@v6
 
 #      - name: 'Run PHPUnit tests'
 #        uses: php-actions/phpunit@v3
