@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Kellton\Tools\Exceptions\NotFound;
-use Kellton\Tools\Features\Action\Data\FailResult;
-use Kellton\Tools\Features\Action\Data\Result;
-use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 /**
@@ -75,6 +72,8 @@ abstract class ActionService extends Service
      * @param callable|null $afterAction operations to be performed after the action. Falls back on class method.
      *
      * @return mixed
+     *
+     * @noinspection PhpDocMissingThrowsInspection
      */
     protected function action(
         callable $action,
@@ -86,6 +85,7 @@ abstract class ActionService extends Service
         ?callable $onActionException = null,
         ?callable $afterAction = null,
     ): mixed {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return $this->executeAction(
             requiresLoadedObject: false,
             action: $action,
@@ -115,6 +115,8 @@ abstract class ActionService extends Service
      * @param callable|null $afterAction operations to be performed after the action. Falls back on class method.
      *
      * @return mixed
+     *
+     * @noinspection PhpDocMissingThrowsInspection
      */
     protected function actionOnObject(
         callable $action,
@@ -126,6 +128,7 @@ abstract class ActionService extends Service
         ?callable $onActionException = null,
         ?callable $afterAction = null
     ): mixed {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return $this->executeAction(
             requiresLoadedObject: true,
             action: $action,
@@ -169,7 +172,7 @@ abstract class ActionService extends Service
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
      */
-    protected function onActionSuccess(Result $result): void
+    protected function onActionSuccess(mixed $result): void
     {
     }
 
@@ -214,32 +217,6 @@ abstract class ActionService extends Service
     }
 
     /**
-     * Return result based on the exception.
-     *
-     * @param Throwable $exception
-     *
-     * @return FailResult
-     */
-    protected function createResultFromException(Throwable $exception): FailResult
-    {
-        $code = $exception->getCode();
-        if (property_exists($exception, 'status')) {
-            $code = $exception->status;
-        }
-
-        if (!array_key_exists($code, Response::$statusTexts)) {
-            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-        } else {
-            $statusCode = $code;
-        }
-
-        return new FailResult(
-            code: $statusCode,
-            message: $exception->getMessage(),
-        );
-    }
-
-    /**
      * Perform a service action.
      *
      * @param bool $requiresLoadedObject whether this action requires an object to be loaded.
@@ -256,6 +233,8 @@ abstract class ActionService extends Service
      * @param callable|null $afterAction operations to be performed after the action. Falls back on class method.
      *
      * @return mixed
+     *
+     * @noinspection PhpDocMissingThrowsInspection
      */
     private function executeAction(
         bool $requiresLoadedObject,
@@ -291,27 +270,20 @@ abstract class ActionService extends Service
                 return $action();
             });
 
-            if ($result instanceof Result) {
-                $onActionSuccess ? $onActionSuccess($result) : $this->onActionSuccess($result);
+            if ($view !== null) {
+                $result = $view($result);
             }
+
+            $onActionSuccess ? $onActionSuccess($result) : $this->onActionSuccess($result);
+
+            return $result;
         } catch (Throwable $exception) {
-            try {
-                $onActionException ? $onActionException($exception) : $this->onActionException($exception);
+            $onActionException ? $onActionException($exception) : $this->onActionException($exception);
 
-                $result = $this->createResultFromException($exception);
-            } catch (Throwable $innerException) {
-                $result = $this->createResultFromException($innerException);
-            }
-
-            report($exception);
+            /** @noinspection PhpUnhandledExceptionInspection */
+            throw $exception;
         } finally {
             $afterAction ? $afterAction() : $this->afterAction();
         }
-
-        if ($view !== null) {
-            return $view($result);
-        }
-
-        return $result;
     }
 }

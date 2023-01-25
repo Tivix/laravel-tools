@@ -2,8 +2,7 @@
 
 namespace Kellton\Tools\Features\OpenApi\Services;
 
-use Kellton\Tools\Features\Action\Data\ActionResult;
-use Kellton\Tools\Features\Action\Data\Result;
+use Illuminate\Support\Collection;
 use Kellton\Tools\Features\Action\Services\ActionService;
 use Kellton\Tools\Helpers\Json;
 use OpenApi\Generator;
@@ -23,33 +22,31 @@ class OpenApiService extends ActionService
     /**
      * Returns the OpenAPI specification.
      *
-     * @return ActionResult
+     * @return Collection
      */
-    public function get(): ActionResult
+    public function get(): Collection
     {
         return $this->action(function () {
             $content = Storage::disk('local')->get(self::FILENAME);
 
-            return new Result(Json::decode($content));
+            return Json::decode($content);
         });
     }
 
     /**
      * Generates the OpenAPI specification.
      *
-     * @return ActionResult
+     * @return void
      */
-    public function generate(): ActionResult
+    public function generate(): void
     {
-        return $this->action(function () {
+        $this->action(function () {
             $openapi = (new Generator())->generate([app_path('Http')]);
             if ($openapi === null) {
                 throw new RuntimeException('OpenAPI specification could not be generated.');
             }
 
             Storage::disk('local')->put(self::FILENAME, $openapi->toJson());
-
-            return new Result();
         });
     }
 }

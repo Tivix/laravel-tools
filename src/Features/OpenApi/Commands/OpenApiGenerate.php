@@ -6,6 +6,7 @@ use Kellton\Tools\Commands\Command;
 use Kellton\Tools\Features\Action\Data\Result;
 use Kellton\Tools\Features\Dependency\Attributes\Dependency;
 use Kellton\Tools\Features\OpenApi\Services\OpenApiService;
+use RuntimeException;
 
 /**
  * Class GenerateOpenApi handles the generation of the OpenAPI specification.
@@ -36,10 +37,11 @@ class OpenApiGenerate extends Command
      */
     public function handle(): void
     {
-        $result = $this->service->generate();
-        if ($result instanceof Result) {
+        try {
+            $this->service->generate();
+
             $this->info('OpenAPI specification generated.');
-        } else {
+        } catch (RuntimeException) {
             $this->error('OpenAPI specification could not be generated.');
         }
     }
