@@ -28,6 +28,23 @@ class TestCase extends Orchestra
     }
 
     /**
+     * Define environment setup.
+     *
+     * @param Application $app
+     *
+     * @return void
+     */
+    public function defineEnvironment($app): void
+    {
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('database.connections.testing', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
+    }
+
+    /**
      * Returns the faker instance.
      *
      * @return Generator
