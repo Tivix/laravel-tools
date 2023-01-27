@@ -2,11 +2,10 @@
 
 namespace Kellton\Tools\Features\ReadModel\Services;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Kellton\Tools\Builders\Builder;
 use Kellton\Tools\Enums\OrderDirection;
-use Kellton\Tools\Features\Action\Data\ActionResult;
-use Kellton\Tools\Features\Action\Data\Result;
 use Kellton\Tools\Features\Action\Services\ModelService;
 use Kellton\Tools\Features\ReadModel\Models\ReadModel;
 use Kellton\Tools\Models\ModelInterface;
@@ -38,7 +37,7 @@ abstract class ReadModelService extends ModelService
      * @param int|Undefined $page
      * @param int|Undefined $perPage
      *
-     * @return ActionResult
+     * @return LengthAwarePaginator
      */
     public function getList(
         Collection|Undefined $filters,
@@ -46,14 +45,12 @@ abstract class ReadModelService extends ModelService
         OrderDirection|Undefined $orderDirection,
         int|Undefined $page,
         int|Undefined $perPage,
-    ): ActionResult {
+    ): LengthAwarePaginator {
         return $this->action(function () use ($filters, $orderBy, $orderDirection, $page, $perPage) {
-            $objects = $this->readModelQuery()
+            return $this->readModelQuery()
                 ->filters($filters)
                 ->order($orderBy, $orderDirection)
                 ->pagination($page, $perPage);
-
-            return new Result($objects);
         });
     }
 
@@ -62,9 +59,9 @@ abstract class ReadModelService extends ModelService
      *
      * @param int $id
      *
-     * @return Result
+     * @return ReadModel
      */
-    public function getOne(int $id): Result
+    public function getOne(int $id): ReadModel
     {
         return $this->action(function () use ($id) {
             $object = $this->readModelQuery()->find($id);
@@ -73,7 +70,7 @@ abstract class ReadModelService extends ModelService
                 $this->load($object);
             }
 
-            return new Result($object);
+            return $object;
         });
     }
 
@@ -82,9 +79,9 @@ abstract class ReadModelService extends ModelService
      *
      * @param ModelInterface $object
      *
-     * @return ActionResult
+     * @return ReadModel
      */
-    public function createOrUpdate(ModelInterface $object): ActionResult
+    public function createOrUpdate(ModelInterface $object): ReadModel
     {
         return $this->action(function () use ($object) {
             $data = $this->generateData($object);
@@ -101,21 +98,19 @@ abstract class ReadModelService extends ModelService
 
             $this->load($object);
 
-            return new Result($object);
+            return $object;
         });
     }
 
     /**
      * Returns the records count.
      *
-     * @return ActionResult
+     * @return int
      */
-    public function count(): ActionResult
+    public function count(): int
     {
         return $this->action(function () {
-            $count = $this->query()->count();
-
-            return new Result($count);
+            return $this->query()->count();
         });
     }
 
@@ -124,14 +119,14 @@ abstract class ReadModelService extends ModelService
      *
      * @param ProgressBar|null $progressBar
      *
-     * @return ActionResult
+     * @return void
      */
-    public function rebuild(?ProgressBar $progressBar = null): ActionResult
+    public function rebuild(?ProgressBar $progressBar = null): void
     {
-        return $this->action(function () use ($progressBar) {
+        $this->action(function () use ($progressBar) {
             $this->query()->chunk(self::CHUNK_SIZE, function (Collection $objects) use ($progressBar) {
                 foreach ($objects as $object) {
-                    $this->createOrUpdate($object)->mandatory();
+                    $this->createOrUpdate($object);
                     /** @noinspection DisconnectedForeachInstructionInspection */
                     $progressBar?->advance();
                 }
@@ -139,25 +134,21 @@ abstract class ReadModelService extends ModelService
 
             $progressBar?->finish();
             $progressBar?->clear();
-
-            return new Result();
         });
     }
 
     /**
      * Delete the read model.
      *
-     * @return Result
+     * @return ReadModel
      */
-    public function delete(): ActionResult
+    public function delete(): ReadModel
     {
-        return $this->actionOnObject(
-            action: function () {
-                $this->object->delete();
+        return $this->actionOnObject(function () {
+            $this->object->delete();
 
-                return new Result();
-            },
-        );
+            return $this->object;
+        });
     }
 
     /**

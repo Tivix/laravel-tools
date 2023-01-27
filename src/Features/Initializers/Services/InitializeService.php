@@ -4,9 +4,8 @@ namespace Kellton\Tools\Features\Initializers\Services;
 
 use Illuminate\Container\Container;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use Kellton\Tools\Features\Action\Data\ActionResult;
-use Kellton\Tools\Features\Action\Data\Result;
 use Kellton\Tools\Features\Action\Services\ActionService;
 use Kellton\Tools\Features\Initializers\Initializer;
 use ReflectionClass;
@@ -19,16 +18,16 @@ class InitializeService extends ActionService
     /**
      * Returns the initializers.
      *
-     * @return ActionResult
+     * @return Collection<Initializer>
      */
-    public function get(): ActionResult
+    public function get(): Collection
     {
         return $this->action(function () {
             /** @var Application $app */
             $app = Container::getInstance();
             $namespace = $app->getNamespace();
 
-            $initializers = collect(File::allFiles(app_path()))
+            return collect(File::allFiles(app_path()))
                 ->map(function ($file) use ($namespace) {
                     $path = $file->getRelativePathName();
 
@@ -58,8 +57,6 @@ class InitializeService extends ActionService
                 ->sortBy('order')
                 ->map(fn ($item) => $item->get('initializer'))
                 ->values();
-
-            return new Result($initializers);
         });
     }
 }

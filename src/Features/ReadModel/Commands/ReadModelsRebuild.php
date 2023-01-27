@@ -4,7 +4,6 @@ namespace Kellton\Tools\Features\ReadModel\Commands;
 
 use Exception;
 use Kellton\Tools\Commands\Command;
-use Kellton\Tools\Features\Action\Exceptions\MandatoryResult;
 use Kellton\Tools\Features\Dependency\Attributes\Dependency;
 use Kellton\Tools\Features\ReadModel\Services\ReadModelService;
 use Kellton\Tools\Features\ReadModel\Services\ReadModelsService;
@@ -42,7 +41,7 @@ class ReadModelsRebuild extends Command
         $this->newLine();
 
         try {
-            $services = $this->service->getReadModels()->getResult();
+            $services = $this->service->getReadModels();
             $progressBar = $this->output->createProgressBar($services->count());
 
             $services->each(function (ReadModelService $service) use ($progressBar) {
@@ -67,14 +66,14 @@ class ReadModelsRebuild extends Command
      *
      * @param ReadModelService $readModelService
      *
-     * @throws MandatoryResult
+     * @return void
      */
     protected function rebuildByService(ReadModelService $readModelService): void
     {
         $this->info($readModelService::class);
         $this->newLine();
 
-        $progressBar = $this->createProgressBar($readModelService->count()->getResult());
-        $readModelService->rebuild($progressBar)->mandatory();
+        $progressBar = $this->createProgressBar($readModelService->count());
+        $readModelService->rebuild($progressBar);
     }
 }

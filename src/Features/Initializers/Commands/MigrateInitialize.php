@@ -42,8 +42,7 @@ class MigrateInitialize extends Command
         $this->info('Initialization started.');
 
         try {
-            /** @var Collection<Initializer> $initializers */
-            $initializers = $this->service->get()->getResult();
+            $initializers = $this->service->get();
             if ($initializers->isEmpty()) {
                 $this->warn('No initializers found.');
 

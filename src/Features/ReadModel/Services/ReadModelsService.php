@@ -4,9 +4,8 @@ namespace Kellton\Tools\Features\ReadModel\Services;
 
 use Illuminate\Container\Container;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use Kellton\Tools\Features\Action\Data\ActionResult;
-use Kellton\Tools\Features\Action\Data\Result;
 use Kellton\Tools\Features\Action\Services\ActionService;
 use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
@@ -19,16 +18,16 @@ final class ReadModelsService extends ActionService
     /**
      * Get the cached model services for all defined cached models inside the given path.
      *
-     * @return ActionResult
+     * @return Collection
      */
-    public function getReadModels(): ActionResult
+    public function getReadModels(): Collection
     {
         return $this->action(function () {
             /** @var Application $app */
             $app = Container::getInstance();
             $namespace = $app->getNamespace();
 
-            $services = collect(File::allFiles(app_path()))
+            return collect(File::allFiles(app_path()))
                 ->map(function (SplFileInfo $file) use ($namespace) {
                     $path = $file->getRelativePathName();
 
@@ -53,9 +52,6 @@ final class ReadModelsService extends ActionService
                 })
                 ->filter()
                 ->values();
-
-            return new Result($services);
         });
     }
-
 }
