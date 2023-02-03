@@ -27,14 +27,16 @@ jobs:
       - name: 'Checkout code'
         uses: actions/checkout@v3
 
-      - name: 'Cache Composer dependencies'
+      - name: 'Cache composer results'
+        id: cache-composer
         uses: actions/cache@v3
         with:
-          path: /tmp/composer-cache
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+          path: ./composer.lock
+          key: ${{ github.sha }}-composer
 
-      - name: 'Install composer dependencies'
-        uses: php-actions/composer@v6
+      - name: 'Composer install'
+        if: steps.cache-composer.outputs.cache-hit != 'true'
+        run: docker run --rm -v $(pwd):/app composer install
 
-      - name: 'Run PHPUnit tests'
-        uses: php-actions/phpunit@v3
+      - name: 'PHPUnit tests'
+        run: docker run --rm -v $(pwd):/app -w /app php:8.2-cli vendor/bin/phpunit
