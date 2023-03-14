@@ -29,7 +29,7 @@ class OpenApiService extends ActionService
         return $this->action(function () {
             $content = Storage::disk('local')->get(self::FILENAME);
 
-            return Json::decode($content);
+            return collect(Json::decode($content));
         });
     }
 
