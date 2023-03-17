@@ -283,24 +283,9 @@ abstract class ActionService extends Service
             $onActionException ? $onActionException($exception) : $this->onActionException($exception);
 
             /** @noinspection PhpUnhandledExceptionInspection */
-            $this->throwParseDException($exception);
+            throw $exception;
         } finally {
             $afterAction ? $afterAction() : $this->afterAction();
         }
-    }
-
-    private function throwParseDException(Throwable $exception): void
-    {
-        $code = $exception->getCode();
-        if (property_exists($exception, 'status')) {
-            $code = $exception->status;
-        }
-
-        $statusCode = !array_key_exists($code, Response::$statusTexts)
-            ? Response::HTTP_INTERNAL_SERVER_ERROR
-            : $code;
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        throw new Exception($exception->getMessage(), $statusCode);
     }
 }

@@ -98,11 +98,14 @@ abstract class Controller extends BaseController
 
     private function convertToResponseFromException(Throwable $exception): JsonResponse
     {
-        if (!array_key_exists($exception->getCode(), Response::$statusTexts)) {
-            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-        } else {
-            $statusCode = $exception->getCode();
+        $code = $exception->getCode();
+        if (property_exists($exception, 'status')) {
+            $code = $exception->status;
         }
+
+        $statusCode = !array_key_exists($code, Response::$statusTexts)
+            ? Response::HTTP_INTERNAL_SERVER_ERROR
+            : $code;
 
         $response = collect([
             'status' => $statusCode,
