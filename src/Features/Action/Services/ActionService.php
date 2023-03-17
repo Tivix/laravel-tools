@@ -3,11 +3,13 @@
 namespace Kellton\Tools\Features\Action\Services;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Kellton\Tools\Exceptions\NotFound;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 /**
@@ -281,9 +283,26 @@ abstract class ActionService extends Service
             $onActionException ? $onActionException($exception) : $this->onActionException($exception);
 
             /** @noinspection PhpUnhandledExceptionInspection */
-            throw $exception;
+            $this->throwParseDException($exception);
         } finally {
             $afterAction ? $afterAction() : $this->afterAction();
         }
+    }
+
+    private function throwParseDException(Throwable $exception): void
+    {
+        $code = $exception->getCode();
+        if (property_exists($exception, 'status')) {
+            $code = $exception->status;
+        }
+
+        if (!array_key_exists($code, Response::$statusTexts)) {
+            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+        } else {
+            $statusCode = $code;
+        }
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        throw new Exception($exception->getMessage(), $statusCode);
     }
 }
