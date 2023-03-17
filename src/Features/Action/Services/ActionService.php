@@ -296,11 +296,9 @@ abstract class ActionService extends Service
             $code = $exception->status;
         }
 
-        if (!array_key_exists($code, Response::$statusTexts)) {
-            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-        } else {
-            $statusCode = $code;
-        }
+        $statusCode = !array_key_exists($code, Response::$statusTexts)
+            ? Response::HTTP_INTERNAL_SERVER_ERROR
+            : $code;
 
         /** @noinspection PhpUnhandledExceptionInspection */
         throw new Exception($exception->getMessage(), $statusCode);
