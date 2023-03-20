@@ -25,13 +25,13 @@ abstract class ModelService extends ActionService
     /**
      * Returns validation for existence of id.
      *
-     * @param int $id
+     * @param int|string $id
      *
      * @return Rule
      */
-    public function getValidationForIdExists(int $id): Rule
+    public function getValidationForPrimaryKeyExists(int|string $id): Rule
     {
-        return new Exists($this->query()->whereId($id));
+        return new Exists($this->query()->whereKey($id));
     }
 
     /**
