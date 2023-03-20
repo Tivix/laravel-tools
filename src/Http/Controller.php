@@ -7,7 +7,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Kellton\Tools\Features\Dependency\Traits\UseDependency;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,6 +28,7 @@ abstract class Controller extends BaseController
      * @param callable|null $onActionException Operations to be performed when an exception is caught. Falls back on
      *     class method.
      * @param callable|null $afterAction Operations to be performed after the action. Falls back on class method.
+     * @param int $code The HTTP status code to use for the successful response.
      *
      * @return JsonResponse|View
      */
@@ -36,21 +36,22 @@ abstract class Controller extends BaseController
         callable $action,
         ?callable $beforeAction = null,
         ?callable $onActionException = null,
-        ?callable $afterAction = null
+        ?callable $afterAction = null,
+        int $code = Response::HTTP_OK
     ): JsonResponse|View {
         try {
             $beforeAction ? $beforeAction() : $this->beforeAction();
 
             $result = $action();
 
-            return $this->convertToResponse($result);
+            return $this->convertToResponse($result, $code);
         } catch (Throwable $exception) {
             try {
                 $onActionException ? $onActionException($exception) : $this->onActionException($exception);
 
                 $result = $this->convertToResponseFromException($exception);
             } catch (Throwable $innerException) {
-                $result = $this->convertToResponseFromException($exception);
+                $result = $this->convertToResponseFromException($innerException);
             }
 
             report($exception);
@@ -88,12 +89,13 @@ abstract class Controller extends BaseController
      * Return a correct response based on the result of the action.
      *
      * @param mixed $result
+     * @param int $code
      *
      * @return JsonResponse|View
      */
-    private function convertToResponse(mixed $result): JsonResponse|View
+    private function convertToResponse(mixed $result, int $code = Response::HTTP_OK): JsonResponse|View
     {
-        return $result instanceof View ? $result : response()->json($result);
+        return $result instanceof View ? $result : response()->json($result, $code);
     }
 
     private function convertToResponseFromException(Throwable $exception): JsonResponse
