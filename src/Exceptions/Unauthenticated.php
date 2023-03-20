@@ -7,7 +7,7 @@ use JetBrains\PhpStorm\Pure;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class Unauthorized handles unauthorized exceptions.
+ * Class Unauthenticated handles unauthenticated exceptions.
  */
 class Unauthenticated extends Exception
 {
