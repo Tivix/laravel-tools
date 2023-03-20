@@ -7,12 +7,11 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Kellton\Tools\Features\Dependency\Traits\UseDependency;
+use Log;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
-use Log;
 
 /**
  * Class Controller adds additional functionality to all controllers.
@@ -98,11 +97,14 @@ abstract class Controller extends BaseController
 
     private function convertToResponseFromException(Throwable $exception): JsonResponse
     {
-        if (!array_key_exists($exception->getCode(), Response::$statusTexts)) {
-            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-        } else {
-            $statusCode = $exception->getCode();
+        $code = $exception->getCode();
+        if (property_exists($exception, 'status')) {
+            $code = $exception->status;
         }
+
+        $statusCode = !array_key_exists($code, Response::$statusTexts)
+            ? Response::HTTP_INTERNAL_SERVER_ERROR
+            : $code;
 
         $response = collect([
             'status' => $statusCode,

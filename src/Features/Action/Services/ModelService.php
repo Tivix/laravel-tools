@@ -29,7 +29,7 @@ abstract class ModelService extends ActionService
      *
      * @return Rule
      */
-    public function getValidationForIdExists(int|string $id): Rule
+    public function getValidationForPrimaryKeyExists(int|string $id): Rule
     {
         return new Exists($this->query()->whereKey($id));
     }
