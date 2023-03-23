@@ -8,12 +8,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Kellton\Tools\Features\Data\Data;
 use Kellton\Tools\Features\Data\Definition;
+use Kellton\Tools\Features\Data\Enums\BuildInType;
 use Kellton\Tools\Features\Data\Exceptions\MissingConstructor;
 use Kellton\Tools\Features\Data\Exceptions\WrongDefaultValue;
 use Kellton\Tools\Features\Data\Property;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Kellton\Tools\Undefined;
+use LogicException;
 use ReflectionException;
 
 /**
@@ -213,7 +215,7 @@ final class DataService
      */
     private function cast(Property $property, mixed $value): mixed
     {
-        $shouldCast = !is_object($value) || $property->dataClass;
+        $shouldCast = !is_object($value) || $property->dataClass || $property->collectionType;
         if (!$shouldCast) {
             return $value;
         }
@@ -226,16 +228,35 @@ final class DataService
             return Carbon::parse($value);
         }
 
-        /** @var class-string<Data> $class */
-        $class = $property->dataClass;
-
         if ($property->isDataObject) {
+            /** @var class-string<Data> $class */
+            $class = $property->dataClass;
+
             return $class::create($value);
         }
 
         if ($property->isCollection) {
+            /** @var BackedEnum|Data $class */
+            $class = $property->collectionType;
+
             return (clone $value)->map(function ($item) use ($class) {
-                return $class::create($item);
+
+                if (is_subclass_of($class, Data::class)) {
+                    return $class::create($item);
+                }
+
+                if (is_subclass_of($class, BackedEnum::class)) {
+                    return $class::from($item);
+                }
+
+                if ($class instanceof BuildInType) {
+                    return match ($class) {
+                        BuildInType::int => (int)$item,
+                        BuildInType::string => (string)$item,
+                    };
+                }
+
+                throw new LogicException('Invalid type');
             });
         }
 

@@ -2,9 +2,14 @@
 
 namespace Kellton\Tools\Features\Data\Services;
 
+use BackedEnum;
+use Kellton\Tools\Features\Data\Data;
 use Kellton\Tools\Features\Data\Definition;
+use Kellton\Tools\Features\Data\Enums\BuildInType;
 use Kellton\Tools\Features\Data\Exceptions\MissingConstructor;
 use Illuminate\Support\Collection;
+use Kellton\Tools\Features\Data\Property;
+use LogicException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -33,36 +38,47 @@ final class DefinitionService
     /**
      * Returns the definition for a data class.
      *
-     * @param string $class
+     * @param string|BuildInType $class
      *
      * @return Definition
      *
      * @throws ReflectionException
      * @throws MissingConstructor
      */
-    public function get(string $class): Definition
+    public function get(string|BuildInType $class): Definition
     {
-        if (!$this->definitions->has($class)) {
-            $this->definitions->put($class, $this->create(new ReflectionClass($class)));
+        $name = $class;
+        if ($class instanceof BuildInType) {
+            $name = $class->name;
         }
 
-        return $this->definitions->get($class);
+        if (!$this->definitions->has($name)) {
+            $content = $class instanceof BuildInType ? $class : new ReflectionClass($class);
+
+            $this->definitions->put($name, $this->create($content));
+        }
+
+        return $this->definitions->get($name);
     }
 
     /**
      * Create a new instance based on the given reflection class.
      *
-     * @param ReflectionClass $class
+     * @param ReflectionClass|BuildInType $class
      *
      * @return Definition
      *
      * @throws MissingConstructor
      */
-    public function create(ReflectionClass $class): Definition
+    public function create(ReflectionClass|BuildInType $class): Definition
     {
-        $constructor = collect($class->getMethods())->first(fn (ReflectionMethod $method) => $method->isConstructor());
-        if (!$constructor) {
-            throw new MissingConstructor($class);
+        if (is_subclass_of($class->name, Data::class)) {
+            $constructor = collect($class->getMethods())->first(
+                fn (ReflectionMethod $method) => $method->isConstructor()
+            );
+            if (!$constructor) {
+                throw new MissingConstructor($class);
+            }
         }
 
         $properties = $this->resolveProperties($class);
@@ -73,17 +89,29 @@ final class DefinitionService
     /**
      * Resolve properties.
      *
-     * @param ReflectionClass $class
+     * @param ReflectionClass|BuildInType $class
      *
-     * @return Collection
+     * @return Collection|Property
      */
-    private function resolveProperties(ReflectionClass $class): Collection
+    private function resolveProperties(ReflectionClass|BuildInType $class): Collection|Property
     {
-        return collect($class->getProperties(ReflectionProperty::IS_PUBLIC))
-            ->reject(fn (ReflectionProperty $property) => $property->isStatic())
-            ->values()
-            ->mapWithKeys(
-                fn (ReflectionProperty $property) => [$property->name => $this->propertyService->create($property)]
-            );
+        if (is_subclass_of($class->name, Data::class)) {
+            return collect($class->getProperties(ReflectionProperty::IS_PUBLIC))
+                ->reject(fn (ReflectionProperty $property) => $property->isStatic())
+                ->values()
+                ->mapWithKeys(
+                    fn (ReflectionProperty $property) => [$property->name => $this->propertyService->create($property)]
+                );
+        }
+
+        if (is_subclass_of($class->name, BackedEnum::class)) {
+            return $this->propertyService->createFromEnum($class);
+        }
+
+        if ($class instanceof BuildInType) {
+            return $this->propertyService->createFromBuildInType($class);
+        }
+
+        throw new LogicException('This should not happen.');
     }
 }

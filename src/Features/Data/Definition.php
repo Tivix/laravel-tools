@@ -7,17 +7,17 @@ use Illuminate\Support\Collection;
 /**
  * Class Definition handles the data reflection of a class.
  */
-final class Definition
+final readonly class Definition
 {
     /**
      * Definition constructor.
      *
      * @param class-string $class
-     * @param Collection $properties
+     * @param Collection|Property $properties
      */
     public function __construct(
-        public readonly string $class,
-        public readonly Collection $properties,
+        public string $class,
+        public Collection|Property $properties,
     ) {
     }
 }
