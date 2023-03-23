@@ -2,18 +2,21 @@
 
 namespace Kellton\Tools\Features\Data\Services;
 
-use Kellton\Tools\Features\Data\Attributes\DataCollection;
+use Kellton\Tools\Features\Data\Attributes\CollectionOf;
+use Kellton\Tools\Features\Data\Attributes\CollectionOfIntegers;
+use Kellton\Tools\Features\Data\Attributes\CollectionOfStrings;
 use Kellton\Tools\Features\Data\Attributes\DefaultValue;
 use Kellton\Tools\Features\Data\Attributes\MapName;
 use Kellton\Tools\Features\Data\Data;
+use Kellton\Tools\Features\Data\Enums\BuildInType;
 use Kellton\Tools\Features\Data\Property;
 use Illuminate\Support\Collection;
 use Kellton\Tools\Undefined;
 use ReflectionAttribute;
+use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionNamedType;
 use ReflectionProperty;
-use ReflectionUnionType;
 use TypeError;
 
 /**
@@ -73,14 +76,34 @@ final class PropertyService
             }
         }
 
+        $dataClass = $collectionType = null;
+
         if ($isDataObject) {
             $dataClass = $type;
         } elseif ($isCollection) {
-            /** @var DataCollection $dataCollection */
-            $dataCollection = $attributes->first(fn ($attribute) => $attribute instanceof DataCollection);
-            $dataClass = $dataCollection?->class;
-        } else {
-            $dataClass = null;
+            $collectionAttribute = $attributes->filter(function ($attribute) {
+                return in_array(
+                    $attribute::class,
+                    [CollectionOf::class, CollectionOfIntegers::class, CollectionOfStrings::class],
+                    true
+                );
+            });
+
+            if ($collectionAttribute->count() > 1) {
+                throw new TypeError(
+                    'CollectionOf, CollectionOfIntegers and CollectionOfStrings are mutually exclusive!'
+                );
+            }
+
+            /** @var CollectionOf $collectionOf */
+            $collectionOf = $collectionAttribute->first();
+
+            $collectionType = match ($collectionOf::class) {
+                CollectionOf::class => $collectionOf->class,
+                CollectionOfIntegers::class => BuildInType::int,
+                CollectionOfStrings::class => BuildInType::string,
+                default => throw new TypeError('Invalid collection type!'),
+            };
         }
 
         return new Property(
@@ -90,12 +113,58 @@ final class PropertyService
             $defaultValue instanceof DefaultValue ? $defaultValue->value : new Undefined(),
             $mapName?->name,
             $dataClass,
+            $collectionType,
             $isNullable,
             $isMixed,
             $isUndefined,
             $isDataObject,
             $isCollection,
             $attributes,
+        );
+    }
+
+    /**
+     * Returns a new instance based on the given reflection enum.
+     *
+     * @param ReflectionClass $class
+     *
+     * @return Property
+     */
+    public function createFromEnum(ReflectionClass $class): Property
+    {
+        return new Property(
+            $class->getShortName(),
+            $class->getName(),
+            $class->getName(),
+            new Undefined(),
+            null,
+            null,
+            null,
+            false,
+            false,
+            false,
+            false,
+            false,
+            collect(),
+        );
+    }
+
+    public function createFromBuildInType(BuildInType $class)
+    {
+        return new Property(
+            $class->name,
+            $class->name,
+            $class->name,
+            new Undefined(),
+            null,
+            null,
+            null,
+            false,
+            false,
+            false,
+            false,
+            false,
+            collect(),
         );
     }
 }

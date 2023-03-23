@@ -3,7 +3,7 @@
 namespace Kellton\Tools\Tests\Data;
 
 use Illuminate\Support\Collection;
-use Kellton\Tools\Features\Data\Attributes\DataCollection;
+use Kellton\Tools\Features\Data\Attributes\CollectionOf;
 use Kellton\Tools\Features\Data\Attributes\MapName;
 use Kellton\Tools\Features\Data\Data;
 use Kellton\Tools\Undefined;
@@ -20,7 +20,7 @@ readonly class IndexData extends Data
      */
     public function __construct(
         #[MapName('f')]
-        #[DataCollection(FilterData::class)]
+        #[CollectionOf(FilterData::class)]
         public Collection|Undefined $filters,
     ) {
     }

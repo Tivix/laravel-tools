@@ -80,7 +80,7 @@ final class RuleService
             return $this->getNestedRules($property, $propertyName);
         }
 
-        return collect([$propertyName => $this->getDataForProperty($property)]);
+        return collect([$propertyName => $this->getRulesForProperty($property)]);
     }
 
     /**
@@ -90,13 +90,14 @@ final class RuleService
      *
      * @return Collection
      */
-    protected function getDataForProperty(Property $property): Collection
+    protected function getRulesForProperty(Property $property): Collection
     {
         $data = collect([
             'rules' => collect(),
             'messages' => collect(),
         ]);
 
+        /** @var Collection $rules */
         $rules = $data->get('rules');
 
         if ($property->isNullable) {
@@ -109,7 +110,7 @@ final class RuleService
 
         if (!$property->isNullable && !$property->isUndefined) {
             if ($property->isCollection) {
-                $rules->add('present');
+                $rules->add('array');
             } else {
                 $rules->add('required');
             }
@@ -134,20 +135,39 @@ final class RuleService
      */
     protected function getNestedRules(Property $property, string $propertyName): Collection
     {
-        $prefix = match (true) {
-            $property->isDataObject => "{$propertyName}.",
-            $property->isCollection => "{$propertyName}.*.",
-            default => throw new TypeError()
+        $parentRules = $this->getRulesForProperty($property);
+
+        $definition = match (true) {
+            $property->isDataObject => $this->definitionService->get($property->dataClass),
+            $property->isCollection => $this->definitionService->get($property->collectionType),
         };
 
-        $parentRules = $this->getDataForProperty($property);
+        if ($property->isDataObject) {
+            $prefix = "{$propertyName}.";
+        } elseif ($property->isCollection) {
+            if ($definition->properties instanceof Collection) {
+                $prefix = "{$propertyName}.*.";
+            } else {
+                $prefix = "{$propertyName}.*";
+            }
+        } else {
+            throw new TypeError('Property is not a data object or a collection.');
+        }
 
-        $definition = $this->definitionService->get($property->dataClass);
-        $rules = $this->get($definition);
+        if ($definition->properties instanceof Collection) {
+            $rules = $this->get($definition);
 
-        return $rules->mapWithKeys(fn (Collection $rules, string $name) => [
-            "{$prefix}{$name}" => $rules,
-        ])->prepend($parentRules, $propertyName);
+            return $rules->mapWithKeys(fn (Collection $rules, string $name) => [
+                "{$prefix}{$name}" => $rules,
+            ])->prepend($parentRules, $propertyName);
+        }
+
+        $rules = $this->getRulesForProperty($definition->properties);
+
+        return collect([
+            $propertyName => $parentRules,
+            $prefix => $rules,
+        ]);
     }
 
     /**
@@ -197,9 +217,15 @@ final class RuleService
             ->attributes
             ->filter(fn (object $attribute) => is_subclass_of($attribute, ValidationAttribute::class))
             ->each(function (ValidationAttribute $rule) use ($data) {
-                $data->get('rules')->add($rule->rule);
+                /** @var Collection $rules */
+                $rules = $data->get('rules');
+
+                $rules->add($rule->rule);
                 if ($rule instanceof Rule && $rule->message !== null) {
-                    $data->get('messages')->put($rule->rule, $rule->message);
+                    /** @var Collection $messages */
+                    $messages = $data->get('messages');
+
+                    $messages->put($rule->rule, $rule->message);
                 }
             });
     }

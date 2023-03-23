@@ -6,9 +6,9 @@ use Exception;
 use JetBrains\PhpStorm\Pure;
 
 /**
- * Class CannotFindDataClass handles exception when data class is not found.
+ * Class WrongCollectionOfType handles exception when provided type for CollectionOf attribute is not supported.
  */
-class CannotFindDataClass extends Exception
+class WrongCollectionOfType extends Exception
 {
     /**
      * NotFoundException constructor.
@@ -16,7 +16,7 @@ class CannotFindDataClass extends Exception
      * @param string $message
      * @param int $code
      */
-    #[Pure] public function __construct(string $message = 'Cannot find data class.', int $code = 0)
+    #[Pure] public function __construct(string $message = 'Only Data and Enum classes are supported.', int $code = 0)
     {
         parent::__construct($message, $code);
     }

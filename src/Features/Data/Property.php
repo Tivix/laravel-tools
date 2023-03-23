@@ -3,11 +3,12 @@
 namespace Kellton\Tools\Features\Data;
 
 use Illuminate\Support\Collection;
+use Kellton\Tools\Features\Data\Enums\BuildInType;
 
 /**
  * Class Property handles the data reflection of a property.
  */
-final class Property
+final readonly class Property
 {
     /**
      * Property constructor.
@@ -18,6 +19,7 @@ final class Property
      * @param mixed $defaultValue
      * @param string|null $mapName
      * @param string|null $dataClass
+     * @param string|BuildInType|null $collectionType
      * @param bool $isNullable
      * @param bool $isMixed
      * @param bool $isUndefined
@@ -26,18 +28,19 @@ final class Property
      * @param Collection $attributes
      */
     public function __construct(
-        public readonly string $name,
-        public readonly string $className,
-        public readonly string $type,
-        public readonly mixed $defaultValue,
-        public readonly ?string $mapName,
-        public readonly ?string $dataClass,
-        public readonly bool $isNullable,
-        public readonly bool $isMixed,
-        public readonly bool $isUndefined,
-        public readonly bool $isDataObject,
-        public readonly bool $isCollection,
-        public readonly Collection $attributes
+        public string $name,
+        public string $className,
+        public string $type,
+        public mixed $defaultValue,
+        public ?string $mapName,
+        public ?string $dataClass,
+        public string|BuildInType|null $collectionType,
+        public bool $isNullable,
+        public bool $isMixed,
+        public bool $isUndefined,
+        public bool $isDataObject,
+        public bool $isCollection,
+        public Collection $attributes
     ) {
     }
 }
