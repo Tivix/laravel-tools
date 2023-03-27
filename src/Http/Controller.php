@@ -10,6 +10,8 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\View\View;
 use Kellton\Tools\Features\Dependency\Traits\UseDependency;
 use Log;
+use ReflectionObject;
+use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -102,7 +104,10 @@ abstract class Controller extends BaseController
     {
         $code = $exception->getCode();
         if (property_exists($exception, 'status')) {
-            $code = $exception->status;
+            $properties = collect((new ReflectionObject($exception))->getProperties(ReflectionProperty::IS_PUBLIC));
+            if ($properties->get('status')) {
+                $code = $exception->status;
+            }
         }
 
         $statusCode = !array_key_exists($code, Response::$statusTexts)
