@@ -3,7 +3,6 @@
 namespace Kellton\Tools\Features\OpenApi\Commands;
 
 use Kellton\Tools\Commands\Command;
-use Kellton\Tools\Features\Action\Data\Result;
 use Kellton\Tools\Features\Dependency\Attributes\Dependency;
 use Kellton\Tools\Features\OpenApi\Services\OpenApiService;
 use RuntimeException;

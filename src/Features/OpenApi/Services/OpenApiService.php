@@ -3,11 +3,12 @@
 namespace Kellton\Tools\Features\OpenApi\Services;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Kellton\Tools\Features\Action\Services\ActionService;
 use Kellton\Tools\Helpers\Json;
+use OpenApi\Attributes as OA;
 use OpenApi\Generator;
 use RuntimeException;
-use Storage;
 
 /**
  * Class OpenApiService handles the OpenAPI specification.
@@ -42,8 +43,13 @@ class OpenApiService extends ActionService
     {
         $this->action(function () {
             $openapi = (new Generator())->generate([app_path('Http')]);
+
             if ($openapi === null) {
                 throw new RuntimeException('OpenAPI specification could not be generated.');
+            }
+
+            if ($openapi->servers === Generator::UNDEFINED) {
+                $openapi->servers = [new OA\Server(config('app.url'))];
             }
 
             Storage::disk('local')->put(self::FILENAME, $openapi->toJson());
