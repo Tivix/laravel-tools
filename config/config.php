@@ -16,4 +16,7 @@ return [
     'pagination' => [
         'per_page' => env('KELLTON_TOOLS_PAGINATION_PER_PAGE', 20),
     ],
+    'open_api' => [
+        'default_url' => env('KELLTON_TOOLS_OPEN_API_DEFAULT_URL', env('APP_URL')),
+    ],
 ];
