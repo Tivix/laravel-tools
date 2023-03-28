@@ -49,7 +49,7 @@ class OpenApiService extends ActionService
             }
 
             if ($openapi->servers === Generator::UNDEFINED) {
-                $openapi->servers = [new OA\Server(config('app.url'))];
+                $openapi->servers = [new OA\Server(config('tools.open_api.default_url'))];
             }
 
             Storage::disk('local')->put(self::FILENAME, $openapi->toJson());
