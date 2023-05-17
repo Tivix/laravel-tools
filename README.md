@@ -1,5 +1,11 @@
 # Kellton Laravel Tools
 
+This package was created in mind to be used internally.
+We will never provide backward compatibility for this package.
+This package probably have many bugs that we are not aware of, or we don't use this package in a way that you do.
+If you want to use this package, you should fork it and use your own version.
+Happy to get any feedback, or pull requests, but don't expect us to merge them (sorry!).
+
 This package provides a set of tools to help you develop Laravel applications.
 
 ## Installation
