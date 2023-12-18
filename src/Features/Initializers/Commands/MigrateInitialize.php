@@ -12,10 +12,7 @@ use Throwable;
 
 /**
  * Class MigrateInitialize handles the initialization of data.
- *
- * @property-read InitializeService $service
  */
-#[Dependency(InitializeService::class, 'service')]
 class MigrateInitialize extends Command
 {
     /**
@@ -31,6 +28,14 @@ class MigrateInitialize extends Command
      * @var string
      */
     protected $description = 'Initialize data.';
+
+    /**
+     * The InitializeService instance.
+     *
+     * @var InitializeService
+     */
+    #[Dependency]
+    protected InitializeService $service;
 
     /**
      * Execute the console command.

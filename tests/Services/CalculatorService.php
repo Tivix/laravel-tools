@@ -3,12 +3,16 @@
 namespace Kellton\Tools\Tests\Services;
 
 use Kellton\Tools\Features\Action\Services\ActionService;
+use Kellton\Tools\Features\Dependency\Attributes\Dependency;
 
 /**
  * Class CalculatorService handles example calculations.
  */
 class CalculatorService extends ActionService
 {
+    #[Dependency]
+    protected ExampleService $exampleService;
+
     /**
      * Return sum of two numbers.
      *
@@ -36,6 +40,18 @@ class CalculatorService extends ActionService
     {
         return $this->action(function () use ($a, $b) {
             return $a / $b;
+        });
+    }
+
+    /**
+     * Return example.
+     *
+     * @return bool
+     */
+    public function example(): bool
+    {
+        return $this->action(function () {
+            return $this->exampleService->example();
         });
     }
 }
