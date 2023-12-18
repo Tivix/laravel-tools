@@ -3,7 +3,6 @@
 namespace Kellton\Tools\Tests\Feature;
 
 use Illuminate\Validation\ValidationException;
-use Kellton\Tools\Features\Data\Data;
 use Kellton\Tools\Features\Data\Exceptions\MissingConstructor;
 use Kellton\Tools\Features\Data\Exceptions\WrongDefaultValue;
 use Kellton\Tools\Tests\Data\EnumCollectionData;

@@ -9,10 +9,7 @@ use RuntimeException;
 
 /**
  * Class GenerateOpenApi handles the generation of the OpenAPI specification.
- *
- * @property-read OpenApiService $service
  */
-#[Dependency(OpenApiService::class, 'service')]
 class OpenApiGenerate extends Command
 {
     /**
@@ -28,6 +25,14 @@ class OpenApiGenerate extends Command
      * @var string
      */
     protected $description = 'Generate OpenAPI specification';
+
+    /**
+     * The OpenApiService instance.
+     *
+     * @var OpenApiService
+     */
+    #[Dependency]
+    protected OpenApiService $service;
 
     /**
      * Execute the console command.

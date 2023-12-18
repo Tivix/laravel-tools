@@ -10,10 +10,7 @@ use Kellton\Tools\Features\ReadModel\Services\ReadModelsService;
 
 /**
  * Class ReadModelsRebuild handles the rebuilding of the read models.
- *
- * @property-read ReadModelsService $service
  */
-#[Dependency(ReadModelsService::class, 'service')]
 class ReadModelsRebuild extends Command
 {
     /**
@@ -29,6 +26,14 @@ class ReadModelsRebuild extends Command
      * @var string
      */
     protected $description = 'Command rebuild all read models';
+
+    /**
+     * The ReadModelsService instance.
+     *
+     * @var ReadModelsService
+     */
+    #[Dependency]
+    protected ReadModelsService $service;
 
     /**
      * Execute the console command.

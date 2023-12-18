@@ -3,10 +3,10 @@
 namespace Kellton\Tools\Features\Dependency\Traits;
 
 use Illuminate\Support\Collection;
-use JetBrains\PhpStorm\Pure;
 use Kellton\Tools\Features\Dependency\Attributes\Dependency;
-use LogicException;
+use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * Trait UseDependency handles possibility to lazy load dependency using Dependency attribute.
@@ -25,7 +25,7 @@ trait UseDependency
      */
     public function __construct()
     {
-        $this->applyDependencies();
+        $this->setupDependencies();
 
         if (is_callable('parent::__construct')) {
             parent::__construct();
@@ -40,18 +40,12 @@ trait UseDependency
      * @return void
      *
      * @noinspection MagicMethodsValidityInspection
-     *
-     * @throws LogicException
      */
     public function __get(string $name)
     {
-        if ($this->isDependencyExist($name)) {
-            $this->{$name} = $this->loadDependency($name);
+        $this->loadDependency($name);
 
-            return $this->{$name};
-        }
-
-        throw new LogicException('Undefined property "' . $name . '"');
+        return $this->{$name} ?? null;
     }
 
     /**
@@ -59,50 +53,46 @@ trait UseDependency
      *
      * @return void
      */
-    private function applyDependencies(): void
+    private function setupDependencies(): void
     {
         $this->dependencies = collect();
         $reflectionClass = new ReflectionClass($this);
+        $properties = collect($reflectionClass->getProperties());
 
-        $attributes = collect($reflectionClass->getAttributes(Dependency::class));
         while ($parent = $reflectionClass->getParentClass()) {
-            $parentAttributes = collect($parent->getAttributes(Dependency::class));
+            $parentProperties = collect($parent->getProperties());
             $reflectionClass = $parent;
-            if ($parentAttributes->isEmpty()) {
+            if ($parentProperties->isEmpty()) {
                 continue;
             }
 
-            $attributes = $attributes->merge($parentAttributes);
+            $properties = $properties->merge($parentProperties);
         }
 
-        foreach ($attributes as $attribute) {
-            /** @var Dependency $dependency */
-            $dependency = $attribute->newInstance();
-            $this->dependencies->put($dependency->getField(), $dependency->getClass());
+        /** @var ReflectionProperty $property */
+        foreach ($properties as $property) {
+            /** @var ReflectionAttribute $attribute */
+            $attribute = collect($property->getAttributes(Dependency::class))->first();
+            if (!$attribute) {
+                continue;
+            }
+
+            $this->dependencies->put($property->getName(), $property->getType()?->getName());
+            unset($this->{$property->getName()});
         }
     }
 
     /**
      * Load dependency from service container.
      *
-     * @param string $field
-     *
-     * @return object
-     */
-    private function loadDependency(string $field): object
-    {
-        return app($this->dependencies->get($field));
-    }
-
-    /**
-     * Check if provided dependency was defined.
-     *
      * @param string $name
      *
-     * @return bool
+     * @return void
      */
-    #[Pure] private function isDependencyExist(string $name): bool
+    private function loadDependency(string $name): void
     {
-        return $this->dependencies->has($name);
+        if ($this->dependencies->has($name)) {
+            $this->{$name} = app($this->dependencies->get($name));
+        }
     }
 }
