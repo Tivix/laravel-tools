@@ -25,16 +25,6 @@ abstract class Command extends BaseCommand
     protected const PROGRESS_BAR_FORMAT = '%current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%';
 
     /**
-     * Command constructor.
-     */
-    public function __construct()
-    {
-        $this->applyDependencies();
-
-        parent::__construct();
-    }
-
-    /**
      * Create progress bar.
      *
      * @param int $total
